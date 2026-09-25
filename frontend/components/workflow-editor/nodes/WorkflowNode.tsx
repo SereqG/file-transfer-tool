@@ -1,5 +1,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import { createPortal } from "react-dom";
 
+import { useHoverTooltip } from "@/hooks/workflow-editor/use-hover-tooltip";
 import { getNodeHandleConfig } from "@/lib/workflow-editor/node-handles";
 import type { WorkflowNode as WorkflowNodeType } from "@/lib/workflow-editor/types";
 
@@ -19,9 +21,16 @@ const HANDLE_CLASS = "!h-2.5 !w-2.5 !border-2 !border-white dark:!border-zinc-90
 
 export function WorkflowNode({ data }: NodeProps<WorkflowNodeType>) {
   const { showTarget, showSource } = getNodeHandleConfig(data.category);
+  const { anchorRef, position, show, hide } =
+    useHoverTooltip<HTMLDivElement>();
 
   return (
-    <div className="relative flex items-center gap-2 overflow-hidden rounded-lg border border-black/[.08] bg-white px-3 py-2 text-sm shadow-sm dark:border-white/[.145] dark:bg-zinc-900">
+    <div
+      ref={anchorRef}
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      className="relative flex items-center gap-2 overflow-hidden rounded-lg border border-black/[.08] bg-white px-3 py-2 text-sm shadow-sm dark:border-white/[.145] dark:bg-zinc-900"
+    >
       <span
         aria-hidden
         className={`absolute inset-y-0 left-0 w-1 ${CATEGORY_ACCENT[data.category]}`}
@@ -48,6 +57,22 @@ export function WorkflowNode({ data }: NodeProps<WorkflowNodeType>) {
           className={`${HANDLE_CLASS} !bg-blue-500`}
         />
       )}
+      {position &&
+        createPortal(
+          <div
+            role="tooltip"
+            style={{ top: position.top, left: position.left }}
+            className="pointer-events-none fixed z-50 w-44 -translate-y-1/2 animate-[tooltip-pop_150ms_ease-out] rounded-lg border border-blue-200/50 bg-white/95 p-2.5 text-xs shadow-xl backdrop-blur-md dark:border-violet-800/50 dark:bg-zinc-900/95"
+          >
+            <p className="font-semibold text-zinc-900 dark:text-zinc-50">
+              {data.label}
+            </p>
+            <p className="mt-0.5 text-zinc-500 dark:text-zinc-400">
+              {data.description}
+            </p>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
