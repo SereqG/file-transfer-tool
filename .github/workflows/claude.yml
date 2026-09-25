@@ -84,7 +84,13 @@ jobs:
           # that direction — discussion mode is enforced here, not just asked
           # for. See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
+          # bypassPermissions auto-approves everything (reads, gh/git
+          # read commands, etc.) without prompting — required in headless
+          # CI where there's no one to answer a permission prompt. Deny
+          # rules are still enforced under bypassPermissions, so the
+          # disallowedTools below still block real implementation.
           claude_args: |
+            --permission-mode bypassPermissions
             --disallowedTools "Edit" "Write" "NotebookEdit" "Bash(git commit:*)" "Bash(git push:*)" "Bash(gh pr create:*)" "Bash(gh pr merge:*)"
-            --max-turns 15
+            --max-turns 25
 
