@@ -70,6 +70,15 @@ oversight.
   vars (e.g. `--workflow-grid-dot`) live in `app/globals.css` next to
   `--background`/`--foreground`. Other routes keep the plain neutral palette
   unless a similar decision extends this there.
+- Within that route, each node **category** additionally gets its own
+  gradient accent (input=blue, transform=violet, output=emerald) applied as
+  a subtle glass-tile gradient, used consistently on both the sidebar node
+  cards and the canvas nodes — see
+  `lib/workflow-editor/node-category-styles.ts` for the color tokens and
+  `components/workflow-editor/common/NodeGlassIcon.tsx` for the shared glass
+  tile the two surfaces render through. Chrome that isn't tied to a specific
+  category (navbar, connectors, selection outline) keeps the blue/violet
+  default above rather than picking up a category color.
 
 ## Icons
 

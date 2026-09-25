@@ -33,6 +33,7 @@ export interface WorkflowNodeData extends Record<string, unknown> {
   label: string;
   category: NodeCategoryId;
   description: string;
+  icon: NodeIconId;
 }
 
 export type WorkflowNode = Node<WorkflowNodeData, typeof WORKFLOW_NODE_TYPE>;
