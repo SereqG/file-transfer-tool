@@ -13,7 +13,7 @@ on:
 jobs:
   claude:
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && github.event.comment.body != '@claude APPROVED') ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
@@ -40,11 +40,51 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
+          # DISCOVERY / PLANNING phase only. Claude must not implement here —
+          # implementation happens in claude-implement.yml, triggered only by
+          # an exact "@claude APPROVED" comment from a maintainer.
+          prompt: |
+            You are in the discovery / planning phase of this conversation.
+            You are NOT implementing anything right now.
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+            Before you respond:
+            1. Read the full conversation so far for this issue or pull
+               request — the original body AND every comment in the thread
+               (e.g. `gh issue view <number> --comments` or
+               `gh pr view <number> --comments`). Do not rely on only the
+               single comment or event that triggered this run.
+            2. Read CLAUDE.md if it exists.
+            3. Explore the relevant parts of the repository to understand
+               current behavior, architecture, and conventions.
+
+            Then, respond with a single comment that:
+            - Summarizes your understanding of what's being asked.
+            - Asks clarifying questions if anything is ambiguous,
+              underspecified, or conflicts with the existing codebase.
+            - Proposes a concrete implementation plan: which files/areas
+              you'd touch, the approach, and any tradeoffs or open
+              questions — enough detail for a maintainer to approve or
+              redirect it.
+
+            Do NOT write, edit, or delete any files. Do NOT run git commit,
+            git push, or create branches/PRs. This run has no ability to
+            implement — your only output is the discussion comment above.
+
+            Once a maintainer is happy with the plan, they will approve it
+            by commenting exactly:
+
+              @claude APPROVED
+
+            That triggers a separate, privileged workflow that implements
+            the approved plan. Do not implement preemptively, and do not
+            ask the user to approve in any other wording.
+
+          # Hard-block implementation tools so Claude can't act on the plan
+          # even if a prompt-injection or ambiguous request tries to push it
+          # that direction — discussion mode is enforced here, not just asked
+          # for. See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+          claude_args: |
+            --disallowedTools "Edit" "Write" "NotebookEdit" "Bash(git commit:*)" "Bash(git push:*)" "Bash(gh pr create:*)" "Bash(gh pr merge:*)"
+            --max-turns 15
 
