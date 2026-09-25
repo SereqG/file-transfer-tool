@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 
 import { useCollapsedToggle } from "@/hooks/workflow-editor/use-collapsed-toggle";
+import { NODE_CATEGORY_STYLES } from "@/lib/workflow-editor/node-category-styles";
 import type { CategoryDefinition } from "@/lib/workflow-editor/types";
 
 import { ToolboxNodeCard } from "./ToolboxNodeCard";
@@ -13,6 +14,7 @@ export function ToolboxCategorySection({
   category,
 }: ToolboxCategorySectionProps) {
   const { collapsed, toggle } = useCollapsedToggle();
+  const style = NODE_CATEGORY_STYLES[category.id];
 
   return (
     <section className="flex flex-col items-center gap-2">
@@ -20,8 +22,12 @@ export function ToolboxCategorySection({
         type="button"
         onClick={toggle}
         aria-expanded={!collapsed}
-        className="flex w-full flex-col items-center gap-0.5 rounded-md py-1 text-zinc-600 transition-colors hover:text-blue-600 dark:text-zinc-300 dark:hover:text-violet-300"
+        className={`flex w-full flex-col items-center gap-0.5 rounded-md py-1 text-zinc-600 transition-colors dark:text-zinc-300 ${style.hoverText}`}
       >
+        <span
+          aria-hidden
+          className={`h-1.5 w-1.5 rounded-full ${style.dot}`}
+        />
         <span className="max-w-full truncate text-[9px] font-semibold uppercase tracking-tight">
           {category.label}
         </span>

@@ -7,8 +7,7 @@ export function getNodeHandleConfig(
     case "input":
       return { showTarget: false, showSource: true };
     case "transform":
-      return { showTarget: true, showSource: true };
     case "output":
-      return { showTarget: true, showSource: false };
+      return { showTarget: true, showSource: true };
   }
 }

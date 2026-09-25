@@ -64,12 +64,22 @@ oversight.
   the component that needs it, not globally in `app/globals.css`, unless the
   dependency is genuinely shared across multiple routes.
 - The `/new-workflow` workflow editor uses blue/violet (Tailwind `blue-*` /
-  `violet-*`) as its accent palette — navbar, active/hover states, node
-  handles and edges, selection accents — layered on top of the existing
+  `violet-*`) as its accent palette for chrome — navbar, active/hover states,
+  connection edges, selection accents — layered on top of the existing
   zinc/black/white base rather than replacing it. Route-specific accent CSS
   vars (e.g. `--workflow-grid-dot`) live in `app/globals.css` next to
   `--background`/`--foreground`. Other routes keep the plain neutral palette
   unless a similar decision extends this there.
+- Node-category surfaces (the sidebar toolbox tiles and the canvas nodes)
+  instead use a per-category accent from
+  `lib/workflow-editor/node-category-styles.ts` (`input` = blue,
+  `transform` = violet, `output` = emerald), applied as a gradient node
+  *border* — not a flat fill. The node/tile body itself is a fixed glass
+  panel (`bg-black/40` + `backdrop-blur-md`, white icon) regardless of
+  category or light/dark mode, so the category gradient border is the only
+  thing that varies. Canvas and sidebar share this look through
+  `components/workflow-editor/common/NodeGlassIcon.tsx` — add new
+  categories there, not by hand-rolling gradients in each component.
 
 ## Icons
 

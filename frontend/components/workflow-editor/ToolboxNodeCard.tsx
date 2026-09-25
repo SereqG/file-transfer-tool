@@ -5,6 +5,7 @@ import { startNodeDrag } from "@/helpers/workflow-editor/drag-payload";
 import { useHoverTooltip } from "@/hooks/workflow-editor/use-hover-tooltip";
 import type { NodeDefinition } from "@/lib/workflow-editor/types";
 
+import { NodeGlassIcon } from "./common/NodeGlassIcon";
 import { NODE_ICONS } from "./node-icons";
 
 interface ToolboxNodeCardProps {
@@ -28,13 +29,9 @@ export function ToolboxNodeCard({ definition }: ToolboxNodeCardProps) {
         onDragStart={handleDragStart}
         onMouseEnter={show}
         onMouseLeave={hide}
-        className="flex h-11 w-11 shrink-0 cursor-grab items-center justify-center rounded-xl border border-white/40 bg-gradient-to-b from-white/70 to-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_2px_6px_rgba(0,0,0,0.08)] backdrop-blur-md transition-transform duration-200 ease-out hover:scale-110 hover:shadow-lg active:scale-95 active:cursor-grabbing dark:border-white/10 dark:from-white/10 dark:to-white/[.02] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_6px_rgba(0,0,0,0.4)]"
+        className="cursor-grab transition-transform duration-200 ease-out hover:scale-110 active:scale-95 active:cursor-grabbing"
       >
-        <Icon
-          size={18}
-          aria-hidden
-          className="text-blue-600 dark:text-violet-400"
-        />
+        <NodeGlassIcon category={definition.category} icon={Icon} size="sm" />
       </div>
       {position &&
         createPortal(
