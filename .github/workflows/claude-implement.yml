@@ -6,9 +6,16 @@ on:
 
 jobs:
   implement:
+    # Only react to an exact approval from a trusted repository
+    # collaborator/maintainer.
     if: |
-      github.event_name == 'issue_comment' &&
-      contains(github.event.comment.body, '@claude APPROVED')
+      github.event.issue.pull_request == null &&
+      github.event.comment.body == '@claude APPROVED' &&
+      (
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'
+      )
 
     runs-on: ubuntu-latest
 
@@ -20,38 +27,199 @@ jobs:
       actions: read
 
     steps:
+      # ---------------------------------------------------------
+      # 1. Checkout repository
+      # ---------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
+      # ---------------------------------------------------------
+      # 2. Claude implements the approved feature
+      # ---------------------------------------------------------
       - name: Run Claude
+        id: claude
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
+          # Claude starts from main and creates a branch for
+          # this Issue.
+          base_branch: main
+
+          # Example:
+          #
+          # claude/issue-123-add-user-permissions
+          #
+          branch_name_template: 'claude/{{entityType}}-{{entityNumber}}-{{description}}'
+
+          claude_args: |
+            --max-turns 30
+
           prompt: |
-            Implement the feature discussed in this GitHub Issue.
+            You are the implementation agent.
+
+            The GitHub Issue has already gone through a
+            discovery and planning phase.
+
+            The developer explicitly approved the plan by
+            writing:
+
+              @claude APPROVED
+
+            Your job is now to implement the approved feature.
 
             IMPORTANT:
 
-            The discovery conversation in this Issue is the
-            source of truth.
-
             Before writing code:
 
-            1. Read the complete Issue.
-            2. Read the complete conversation.
-            3. Read CLAUDE.md.
-            4. Verify that the implementation plan still
-               matches the repository.
-            5. If something is inconsistent, STOP and explain
-               the discrepancy instead of guessing.
+            1. Read the complete GitHub Issue.
+            2. Read the complete Issue conversation.
+            3. Read CLAUDE.md if it exists.
+            4. Inspect the relevant parts of the repository.
+            5. Find and understand the implementation plan
+               agreed during the discovery conversation.
 
-            Then:
+            The Issue conversation is the source of truth.
 
-            - implement the approved plan
-            - write/update tests
-            - run relevant tests
-            - run lint/typecheck where applicable
-            - avoid unrelated changes
-            - commit the implementation
-            - prepare the changes for a pull request
+            If the approved plan conflicts with the current
+            repository, STOP and explain the discrepancy
+            instead of guessing.
+
+            IMPLEMENTATION:
+
+            - Implement the approved plan.
+            - Follow existing architecture and conventions.
+            - Reuse existing abstractions.
+            - Avoid unrelated changes.
+            - Do not introduce unnecessary dependencies.
+            - Preserve existing functionality.
+
+            TESTING:
+
+            - Add or update tests.
+            - Run the relevant test suite.
+            - Run lint if available.
+            - Run typecheck if available.
+            - Run build if appropriate.
+
+            If tests fail:
+            - determine whether your changes caused the failure
+            - fix the implementation when appropriate
+            - run the tests again
+            - never disable tests simply to make them pass
+
+            GIT:
+
+            - Work on the branch created for this Issue.
+            - Commit all implementation changes.
+            - Use a descriptive commit message.
+            - Do not commit unrelated changes.
+            - Push the branch when implementation is complete.
+
+            Do NOT create a Pull Request yourself.
+            The GitHub Actions workflow will create the PR.
+
+            FINAL RESPONSE:
+
+            Report:
+            - what was implemented
+            - important decisions
+            - files changed
+            - tests executed
+            - test results
+            - remaining concerns
+
+      # ---------------------------------------------------------
+      # 3. Make sure Claude returned a branch
+      # ---------------------------------------------------------
+      - name: Verify Claude branch
+        id: verify
+        env:
+          CLAUDE_BRANCH: ${{ steps.claude.outputs.branch_name }}
+        run: |
+          if [ -z "$CLAUDE_BRANCH" ]; then
+            echo "Claude did not return a branch name."
+            exit 1
+          fi
+
+          echo "Claude branch: $CLAUDE_BRANCH"
+
+      # ---------------------------------------------------------
+      # 4. Fetch Claude's branch
+      # ---------------------------------------------------------
+      - name: Fetch Claude branch
+        env:
+          CLAUDE_BRANCH: ${{ steps.claude.outputs.branch_name }}
+        run: |
+          git fetch origin "$CLAUDE_BRANCH:$CLAUDE_BRANCH"
+
+      # ---------------------------------------------------------
+      # 5. Check whether Claude actually changed anything
+      # ---------------------------------------------------------
+      - name: Check for changes
+        id: changes
+        env:
+          CLAUDE_BRANCH: ${{ steps.claude.outputs.branch_name }}
+        run: |
+          git fetch origin main
+
+          if git diff --quiet "origin/main...origin/$CLAUDE_BRANCH"; then
+            echo "No changes were produced."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Changes detected."
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---------------------------------------------------------
+      # 6. Create Pull Request
+      # ---------------------------------------------------------
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLAUDE_BRANCH: ${{ steps.claude.outputs.branch_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "$CLAUDE_BRANCH" \
+            --title "feat: $ISSUE_TITLE" \
+            --body "$(cat <<EOF
+          ## Summary
+
+          This PR was implemented by Claude Code from
+          GitHub Issue #$ISSUE_NUMBER.
+
+          ## Discovery
+
+          The implementation was discussed and approved
+          by a human before Claude was allowed to modify
+          the repository.
+
+          ## Tests
+
+          Claude was instructed to run the relevant:
+
+          - tests
+          - lint
+          - typecheck
+          - build
+
+          ## Related Issue
+
+          Closes #$ISSUE_NUMBER
+          EOF
+          )"
+
+      # ---------------------------------------------------------
+      # 7. Fail if Claude produced nothing
+      # ---------------------------------------------------------
+      - name: Fail if no changes were produced
+        if: steps.changes.outputs.has_changes != 'true'
+        run: |
+          echo "Claude completed without producing changes."
+          exit 1
