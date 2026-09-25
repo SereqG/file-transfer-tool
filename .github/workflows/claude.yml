@@ -92,5 +92,5 @@ jobs:
           claude_args: |
             --permission-mode bypassPermissions
             --disallowedTools "Edit" "Write" "NotebookEdit" "Bash(git commit:*)" "Bash(git push:*)" "Bash(gh pr create:*)" "Bash(gh pr merge:*)"
-            --max-turns 25
+            --max-turns 40
 
