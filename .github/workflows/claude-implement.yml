@@ -1,0 +1,57 @@
+name: Claude Implementation
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  implement:
+    if: |
+      github.event_name == 'issue_comment' &&
+      contains(github.event.comment.body, '@claude APPROVED')
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          prompt: |
+            Implement the feature discussed in this GitHub Issue.
+
+            IMPORTANT:
+
+            The discovery conversation in this Issue is the
+            source of truth.
+
+            Before writing code:
+
+            1. Read the complete Issue.
+            2. Read the complete conversation.
+            3. Read CLAUDE.md.
+            4. Verify that the implementation plan still
+               matches the repository.
+            5. If something is inconsistent, STOP and explain
+               the discrepancy instead of guessing.
+
+            Then:
+
+            - implement the approved plan
+            - write/update tests
+            - run relevant tests
+            - run lint/typecheck where applicable
+            - avoid unrelated changes
+            - commit the implementation
+            - prepare the changes for a pull request

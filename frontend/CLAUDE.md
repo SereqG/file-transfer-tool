@@ -1,9 +1,8 @@
-# CLAUDE.md
+## Development
 
-This file is a living set of conventions for this Next.js project. It was
-started while building the `/new-workflow` React Flow editor, but it is not
-about that feature specifically — extend it whenever a new top-level
-convention decision gets made, don't leave it stale.
+Before creating new abstractions, look for existing ones.
+
+Prefer existing utilities over introducing new dependencies.
 
 ## Folder structure
 
