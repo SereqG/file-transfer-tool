@@ -1,5 +1,6 @@
-import type { NodeProps } from "@xyflow/react";
+import { useNodeConnections, type NodeProps } from "@xyflow/react";
 
+import { getNodeStatus } from "@/lib/workflow-editor/node-status";
 import { getNodeHandleConfig } from "@/lib/workflow-editor/node-handles";
 import type { WorkflowNode as WorkflowNodeType } from "@/lib/workflow-editor/types";
 
@@ -11,10 +12,13 @@ import {
 } from "../glass-tile";
 import { NODE_ICONS } from "../node-icons";
 import { NodeHandle } from "./NodeHandle";
+import { NodeStatusBadge } from "./NodeStatusBadge";
 
-export function WorkflowNode({ data, selected }: NodeProps<WorkflowNodeType>) {
+export function WorkflowNode({ id, data, selected }: NodeProps<WorkflowNodeType>) {
   const { showTarget, showSource } = getNodeHandleConfig(data.category);
   const Icon = NODE_ICONS[data.icon];
+  const incoming = useNodeConnections({ id, handleType: "target" });
+  const status = getNodeStatus(data.category, incoming.length);
 
   return (
     <div className="relative" style={getCategoryColorStyle(data.category)}>
@@ -26,6 +30,7 @@ export function WorkflowNode({ data, selected }: NodeProps<WorkflowNodeType>) {
         }`}
       >
         <span aria-hidden className={GLASS_TILE_SHEEN} />
+        {status && <NodeStatusBadge status={status} />}
         {showTarget && <NodeHandle type="target" />}
         <Icon size={30} aria-hidden className="relative text-white" />
         {showSource && <NodeHandle type="source" />}
