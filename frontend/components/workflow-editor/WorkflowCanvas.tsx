@@ -8,6 +8,7 @@ import "@xyflow/react/dist/style.css";
 
 import { useCanvasDrop } from "@/hooks/workflow-editor/use-canvas-drop";
 import { useWorkflowGraph } from "@/hooks/workflow-editor/use-workflow-graph";
+import { isConnectionAllowed } from "@/lib/workflow-editor/connection-rules";
 import { INITIAL_VIEWPORT } from "@/lib/workflow-editor/constants";
 
 import { nodeTypes } from "./nodes/node-types";
@@ -26,6 +27,7 @@ export function WorkflowCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        isValidConnection={isConnectionAllowed}
         nodeTypes={nodeTypes}
         defaultViewport={INITIAL_VIEWPORT}
         defaultEdgeOptions={{ style: { stroke: "#7c3aed", strokeWidth: 2 } }}
