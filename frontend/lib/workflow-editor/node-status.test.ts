@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getNodeStatus } from "./node-status";
+import { getNodeStatus, getNodeStatusHint } from "./node-status";
 
 describe("getNodeStatus", () => {
   it("has no status for an input node", () => {
@@ -21,5 +21,20 @@ describe("getNodeStatus", () => {
 
   it("keeps a node with several incoming edges connected", () => {
     expect(getNodeStatus("output", 3)).toBe("connected");
+  });
+});
+
+describe("getNodeStatusHint", () => {
+  it("tells a disconnected node how to get an input", () => {
+    expect(getNodeStatusHint("disconnected", 0)).toContain("Drag a connection");
+  });
+
+  it("confirms the source count for a connected node", () => {
+    expect(getNodeStatusHint("connected", 1)).toBe(
+      "Receiving data from 1 node.",
+    );
+    expect(getNodeStatusHint("connected", 3)).toBe(
+      "Receiving data from 3 nodes.",
+    );
   });
 });

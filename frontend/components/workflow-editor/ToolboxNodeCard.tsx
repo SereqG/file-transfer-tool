@@ -6,6 +6,7 @@ import type { NodeDefinition } from "@/lib/workflow-editor/types";
 
 import {
   GLASS_TILE_HOVER,
+  GLASS_TILE_ICON,
   GLASS_TILE_SHEEN,
   GLASS_TILE_SURFACE,
   getCategoryColorStyle,
@@ -37,7 +38,7 @@ export function ToolboxNodeCard({ definition }: ToolboxNodeCardProps) {
         className={`${GLASS_TILE_SURFACE} ${GLASS_TILE_HOVER} flex h-11 w-11 shrink-0 cursor-grab items-center justify-center rounded-xl active:scale-95 active:cursor-grabbing`}
       >
         <span aria-hidden className={GLASS_TILE_SHEEN} />
-        <Icon size={18} aria-hidden className="relative text-white" />
+        <Icon size={18} aria-hidden className={`relative ${GLASS_TILE_ICON}`} />
       </div>
       {position && (
         <NodeTooltip position={position}>

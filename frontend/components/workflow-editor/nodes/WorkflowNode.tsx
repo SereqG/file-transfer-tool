@@ -6,6 +6,7 @@ import type { WorkflowNode as WorkflowNodeType } from "@/lib/workflow-editor/typ
 
 import {
   GLASS_TILE_HOVER,
+  GLASS_TILE_ICON,
   GLASS_TILE_SHEEN,
   GLASS_TILE_SURFACE,
   getCategoryColorStyle,
@@ -39,16 +40,22 @@ export function WorkflowNode({
           }`}
         >
           <span aria-hidden className={GLASS_TILE_SHEEN} />
-          <Icon size={30} aria-hidden className="relative text-white" />
+          <Icon
+            size={30}
+            aria-hidden
+            className={`relative ${GLASS_TILE_ICON}`}
+          />
         </div>
-        {status && <NodeStatusBadge status={status} />}
         {showTarget && <NodeHandle type="target" />}
         {showSource && <NodeHandle type="source" />}
       </div>
       <NodeDeleteButton nodeId={id} visible={Boolean(selected)} />
-      <p className="pointer-events-none absolute left-1/2 top-full mt-1.5 w-28 -translate-x-1/2 truncate text-center text-xs font-medium text-zinc-700 dark:text-zinc-200">
+      <p className="pointer-events-none absolute left-1/2 top-full mt-1.5 w-28 -translate-x-1/2 truncate text-center text-xs font-medium text-violet-900 dark:text-white">
         {data.label}
       </p>
+      {status && (
+        <NodeStatusBadge status={status} incomingCount={incoming.length} />
+      )}
     </div>
   );
 }
