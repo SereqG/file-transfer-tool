@@ -17,6 +17,7 @@ export function createWorkflowNode(
       label: definition.label,
       category: definition.category,
       description: definition.description,
+      icon: definition.icon,
     },
   };
 }

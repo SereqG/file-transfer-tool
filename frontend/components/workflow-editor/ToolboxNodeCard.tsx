@@ -5,6 +5,12 @@ import { startNodeDrag } from "@/helpers/workflow-editor/drag-payload";
 import { useHoverTooltip } from "@/hooks/workflow-editor/use-hover-tooltip";
 import type { NodeDefinition } from "@/lib/workflow-editor/types";
 
+import {
+  GLASS_TILE_HOVER,
+  GLASS_TILE_SHEEN,
+  GLASS_TILE_SURFACE,
+  getCategoryColorStyle,
+} from "./glass-tile";
 import { NODE_ICONS } from "./node-icons";
 
 interface ToolboxNodeCardProps {
@@ -28,13 +34,11 @@ export function ToolboxNodeCard({ definition }: ToolboxNodeCardProps) {
         onDragStart={handleDragStart}
         onMouseEnter={show}
         onMouseLeave={hide}
-        className="flex h-11 w-11 shrink-0 cursor-grab items-center justify-center rounded-xl border border-white/40 bg-gradient-to-b from-white/70 to-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_2px_6px_rgba(0,0,0,0.08)] backdrop-blur-md transition-transform duration-200 ease-out hover:scale-110 hover:shadow-lg active:scale-95 active:cursor-grabbing dark:border-white/10 dark:from-white/10 dark:to-white/[.02] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_6px_rgba(0,0,0,0.4)]"
+        style={getCategoryColorStyle(definition.category)}
+        className={`${GLASS_TILE_SURFACE} ${GLASS_TILE_HOVER} flex h-11 w-11 shrink-0 cursor-grab items-center justify-center rounded-xl active:scale-95 active:cursor-grabbing`}
       >
-        <Icon
-          size={18}
-          aria-hidden
-          className="text-blue-600 dark:text-violet-400"
-        />
+        <span aria-hidden className={GLASS_TILE_SHEEN} />
+        <Icon size={18} aria-hidden className="relative text-white" />
       </div>
       {position &&
         createPortal(
