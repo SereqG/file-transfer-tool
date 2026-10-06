@@ -3,6 +3,9 @@ interface ConnectionEnds {
   target: string;
 }
 
-export function isConnectionAllowed({ source, target }: ConnectionEnds): boolean {
+export function isConnectionAllowed({
+  source,
+  target,
+}: ConnectionEnds): boolean {
   return source !== target;
 }

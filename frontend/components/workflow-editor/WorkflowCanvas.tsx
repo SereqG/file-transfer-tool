@@ -1,9 +1,4 @@
-import {
-  Background,
-  BackgroundVariant,
-  Panel,
-  ReactFlow,
-} from "@xyflow/react";
+import { Background, BackgroundVariant, Panel, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { useCanvasDrop } from "@/hooks/workflow-editor/use-canvas-drop";

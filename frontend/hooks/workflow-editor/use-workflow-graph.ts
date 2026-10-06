@@ -6,6 +6,7 @@ import {
   type Connection,
 } from "@xyflow/react";
 
+import { isConnectionAllowed } from "@/lib/workflow-editor/connection-rules";
 import { WORKFLOW_EDGE_TYPE } from "@/lib/workflow-editor/constants";
 import type { WorkflowEdge, WorkflowNode } from "@/lib/workflow-editor/types";
 
@@ -15,7 +16,10 @@ export function useWorkflowGraph() {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      setEdges((currentEdges) => addEdge({ ...connection, type: WORKFLOW_EDGE_TYPE }, currentEdges));
+      if (!isConnectionAllowed(connection)) return;
+      setEdges((currentEdges) =>
+        addEdge({ ...connection, type: WORKFLOW_EDGE_TYPE }, currentEdges),
+      );
     },
     [setEdges],
   );

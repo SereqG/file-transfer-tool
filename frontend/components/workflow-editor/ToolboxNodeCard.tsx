@@ -18,8 +18,7 @@ interface ToolboxNodeCardProps {
 }
 
 export function ToolboxNodeCard({ definition }: ToolboxNodeCardProps) {
-  const { anchorRef, position, show, hide } =
-    useHoverTooltip<HTMLDivElement>();
+  const { anchorRef, position, show, hide } = useHoverTooltip<HTMLDivElement>();
   const Icon = NODE_ICONS[definition.icon];
 
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {

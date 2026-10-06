@@ -15,25 +15,34 @@ import { NodeDeleteButton } from "./NodeDeleteButton";
 import { NodeHandle } from "./NodeHandle";
 import { NodeStatusBadge } from "./NodeStatusBadge";
 
-export function WorkflowNode({ id, data, selected }: NodeProps<WorkflowNodeType>) {
+export function WorkflowNode({
+  id,
+  data,
+  selected,
+}: NodeProps<WorkflowNodeType>) {
   const { showTarget, showSource } = getNodeHandleConfig(data.category);
   const Icon = NODE_ICONS[data.icon];
   const incoming = useNodeConnections({ id, handleType: "target" });
   const status = getNodeStatus(data.category, incoming.length);
 
   return (
-    <div className="group relative" style={getCategoryColorStyle(data.category)}>
-      <div
-        className={`${GLASS_TILE_SURFACE} ${GLASS_TILE_HOVER} flex h-[72px] w-[72px] cursor-pointer items-center justify-center rounded-2xl ${
-          selected
-            ? "ring-2 ring-[var(--node-color)] ring-offset-2 ring-offset-background"
-            : ""
-        }`}
-      >
-        <span aria-hidden className={GLASS_TILE_SHEEN} />
+    <div
+      className="group relative"
+      style={getCategoryColorStyle(data.category)}
+    >
+      <div className="relative h-[72px] w-[72px]">
+        <div
+          className={`${GLASS_TILE_SURFACE} ${GLASS_TILE_HOVER} flex h-full w-full cursor-pointer items-center justify-center rounded-2xl ${
+            selected
+              ? "ring-2 ring-[var(--node-color)] ring-offset-2 ring-offset-background"
+              : ""
+          }`}
+        >
+          <span aria-hidden className={GLASS_TILE_SHEEN} />
+          <Icon size={30} aria-hidden className="relative text-white" />
+        </div>
         {status && <NodeStatusBadge status={status} />}
         {showTarget && <NodeHandle type="target" />}
-        <Icon size={30} aria-hidden className="relative text-white" />
         {showSource && <NodeHandle type="source" />}
       </div>
       <NodeDeleteButton nodeId={id} visible={Boolean(selected)} />

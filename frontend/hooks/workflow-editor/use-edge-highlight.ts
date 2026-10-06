@@ -1,10 +1,7 @@
 import { useStore } from "@xyflow/react";
 
 import { isEdgeHighlighted } from "@/lib/workflow-editor/edge-highlight";
-import type {
-  NodeCategoryId,
-  WorkflowNode,
-} from "@/lib/workflow-editor/types";
+import type { NodeCategoryId } from "@/lib/workflow-editor/types";
 
 interface UseEdgeHighlightArgs {
   source: string;
@@ -17,18 +14,25 @@ export function useEdgeHighlight({
   target,
   selected,
 }: UseEdgeHighlightArgs) {
-  const sourceNode = useStore((s) => s.nodeLookup.get(source));
-  const targetNode = useStore((s) => s.nodeLookup.get(target));
-
-  const sourceCategory = (sourceNode as WorkflowNode | undefined)?.data
-    .category as NodeCategoryId | undefined;
-  const targetCategory = (targetNode as WorkflowNode | undefined)?.data
-    .category as NodeCategoryId | undefined;
+  const sourceCategory = useStore(
+    (s) =>
+      s.nodeLookup.get(source)?.data.category as NodeCategoryId | undefined,
+  );
+  const targetCategory = useStore(
+    (s) =>
+      s.nodeLookup.get(target)?.data.category as NodeCategoryId | undefined,
+  );
+  const sourceSelected = useStore(
+    (s) => s.nodeLookup.get(source)?.selected ?? false,
+  );
+  const targetSelected = useStore(
+    (s) => s.nodeLookup.get(target)?.selected ?? false,
+  );
 
   const highlighted = isEdgeHighlighted({
     selected,
-    sourceSelected: sourceNode?.selected ?? false,
-    targetSelected: targetNode?.selected ?? false,
+    sourceSelected,
+    targetSelected,
   });
 
   return { highlighted, sourceCategory, targetCategory };

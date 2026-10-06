@@ -37,7 +37,7 @@ export function WorkflowEdge({
   });
 
   const colored = (highlighted || hovered) && sourceCategory && targetCategory;
-  const gradientId = `edge-gradient-${id}`;
+  const gradientId = `edge-gradient-${id.replace(/[^A-Za-z0-9_-]/g, "_")}`;
 
   return (
     <g
@@ -55,7 +55,10 @@ export function WorkflowEdge({
             y2={targetY}
           >
             <stop offset="0%" stopColor={getCategoryColorVar(sourceCategory)} />
-            <stop offset="100%" stopColor={getCategoryColorVar(targetCategory)} />
+            <stop
+              offset="100%"
+              stopColor={getCategoryColorVar(targetCategory)}
+            />
           </linearGradient>
         </defs>
       )}
