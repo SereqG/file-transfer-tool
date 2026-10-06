@@ -11,6 +11,7 @@ import {
   getCategoryColorStyle,
 } from "../glass-tile";
 import { NODE_ICONS } from "../node-icons";
+import { NodeDeleteButton } from "./NodeDeleteButton";
 import { NodeHandle } from "./NodeHandle";
 import { NodeStatusBadge } from "./NodeStatusBadge";
 
@@ -21,7 +22,7 @@ export function WorkflowNode({ id, data, selected }: NodeProps<WorkflowNodeType>
   const status = getNodeStatus(data.category, incoming.length);
 
   return (
-    <div className="relative" style={getCategoryColorStyle(data.category)}>
+    <div className="group relative" style={getCategoryColorStyle(data.category)}>
       <div
         className={`${GLASS_TILE_SURFACE} ${GLASS_TILE_HOVER} flex h-[72px] w-[72px] cursor-pointer items-center justify-center rounded-2xl ${
           selected
@@ -35,6 +36,7 @@ export function WorkflowNode({ id, data, selected }: NodeProps<WorkflowNodeType>
         <Icon size={30} aria-hidden className="relative text-white" />
         {showSource && <NodeHandle type="source" />}
       </div>
+      <NodeDeleteButton nodeId={id} visible={Boolean(selected)} />
       <p className="pointer-events-none absolute left-1/2 top-full mt-1.5 w-28 -translate-x-1/2 truncate text-center text-xs font-medium text-zinc-700 dark:text-zinc-200">
         {data.label}
       </p>

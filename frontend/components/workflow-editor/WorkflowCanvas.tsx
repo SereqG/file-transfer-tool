@@ -37,6 +37,7 @@ export function WorkflowCanvas() {
         defaultViewport={INITIAL_VIEWPORT}
         defaultEdgeOptions={{ type: WORKFLOW_EDGE_TYPE }}
         connectionLineStyle={{ stroke: "var(--edge-idle)", strokeWidth: 2 }}
+        deleteKeyCode="Delete"
         panOnDrag={[1]}
         selectionOnDrag
       >
