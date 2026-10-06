@@ -1,15 +1,15 @@
-import {
-  Background,
-  BackgroundVariant,
-  Panel,
-  ReactFlow,
-} from "@xyflow/react";
+import { Background, BackgroundVariant, Panel, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { useCanvasDrop } from "@/hooks/workflow-editor/use-canvas-drop";
 import { useWorkflowGraph } from "@/hooks/workflow-editor/use-workflow-graph";
-import { INITIAL_VIEWPORT } from "@/lib/workflow-editor/constants";
+import { isConnectionAllowed } from "@/lib/workflow-editor/connection-rules";
+import {
+  INITIAL_VIEWPORT,
+  WORKFLOW_EDGE_TYPE,
+} from "@/lib/workflow-editor/constants";
 
+import { edgeTypes } from "./edges/edge-types";
 import { nodeTypes } from "./nodes/node-types";
 import { WorkflowControlsBar } from "./WorkflowControlsBar";
 
@@ -26,10 +26,13 @@ export function WorkflowCanvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        isValidConnection={isConnectionAllowed}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         defaultViewport={INITIAL_VIEWPORT}
-        defaultEdgeOptions={{ style: { stroke: "#7c3aed", strokeWidth: 2 } }}
-        connectionLineStyle={{ stroke: "#2563eb", strokeWidth: 2 }}
+        defaultEdgeOptions={{ type: WORKFLOW_EDGE_TYPE }}
+        connectionLineStyle={{ stroke: "var(--edge-idle)", strokeWidth: 2 }}
+        deleteKeyCode="Delete"
         panOnDrag={[1]}
         selectionOnDrag
       >

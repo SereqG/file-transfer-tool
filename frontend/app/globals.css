@@ -4,6 +4,10 @@
   --background: #ffffff;
   --foreground: #171717;
   --workflow-grid-dot: #7c3aed40;
+  --node-input: #059669;
+  --node-transform: #7c3aed;
+  --node-output: #d97706;
+  --edge-idle: #a1a1aa;
 }
 
 @theme inline {
@@ -18,6 +22,10 @@
     --background: #0a0a0a;
     --foreground: #ededed;
     --workflow-grid-dot: #a78bfa40;
+    --node-input: #10b981;
+    --node-transform: #8b5cf6;
+    --node-output: #f59e0b;
+    --edge-idle: #52525b;
   }
 }
 

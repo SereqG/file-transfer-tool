@@ -5,3 +5,4 @@ export const WORKFLOW_NODE_TYPE = "workflowNode";
 export const INITIAL_VIEWPORT: Viewport = { x: 0, y: 0, zoom: 1 };
 
 export const VIEWPORT_TRANSITION_MS = 300;
+export const WORKFLOW_EDGE_TYPE = "workflowEdge";
